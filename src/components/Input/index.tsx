@@ -6,8 +6,10 @@ import React, {
   useCallback,
 } from 'react';
 import { IconBaseProps } from 'react-icons';
+import { FiAlertOctagon } from 'react-icons/fi';
 import { useField } from '@unform/core';
-import { Container } from './styles';
+import { Container, Error } from './styles';
+import Tooltip from '../Tooltip';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -25,6 +27,8 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
     setFilled(!!inputRef.current?.value);
   }, []);
 
+  const handleInputFocus = useCallback(() => setFocused(true), []);
+
   useEffect(() => {
     registerField({
       name: fieldName,
@@ -34,15 +38,20 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
   }, [fieldName, registerField]);
 
   return (
-    <Container isFocused={isFocused} isFilled={isFilled}>
+    <Container isErrored={!!error} isFocused={isFocused} isFilled={isFilled}>
       {Icon && <Icon size={20} />}
       <input
         name={name}
-        onFocus={() => setFocused(true)}
+        onFocus={handleInputFocus}
         onBlur={handleInputBlur}
         ref={inputRef}
         {...rest}
       />
+      {error && (
+        <Error title={error}>
+          <FiAlertOctagon size={20} color="#c53030" />
+        </Error>
+      )}
     </Container>
   );
 };
